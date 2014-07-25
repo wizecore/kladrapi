@@ -30,7 +30,7 @@ try {
  */
 function xmlGenerate(MongoDb $db)
 {
-    $path = "c:/temp/elements.xml";
+    $path = "../cache/elements.xml";
     $complex = $db->complex;
     
     $elements = $complex->find(array(), array(
