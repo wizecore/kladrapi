@@ -31,7 +31,7 @@ namespace Kladr\Core\Services {
          * Kladr\Core\Services\ApiService construct
          * @param \Racecore\GATracking\GATracking $googleTracker Трекер
          */
-        public function __construct($googleTracker)
+        public function __construct($googleTracker = null)
         {
             $this->_arPlugins = array();
             $this->googleTracker = $googleTracker;
@@ -118,6 +118,11 @@ namespace Kladr\Core\Services {
          */
         public function log(Request $request)
         {
+	    if (!$this->googleTracker) {
+		error_log("API Request: " . $request->getURI() . " " . $request->getClientAddress());
+		return;
+	    }
+
             $this->googleTracker->setClientID($request->get('token'));
 
             $page = new \Racecore\GATracking\Tracking\Page();

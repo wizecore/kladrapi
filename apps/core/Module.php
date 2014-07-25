@@ -246,13 +246,19 @@ namespace Kladr\Core {
             ));
 
             // Register GA
-            $di->set('apiTracker', function() use($config) {
-                return new \Racecore\GATracking\GATracking($config->ga->code);
-            });
+	    if ($config->ga->code) {
+                $di->set('apiTracker', function() use($config) {
+	            return new \Racecore\GATracking\GATracking($config->ga->code);
+	        });
+	    }
 
             // Setting api
-            $di->setShared('api', function() use ($di) {
-                $api = new Services\ApiService($di->get('apiTracker'));
+            $di->setShared('api', function() use ($di, $config) {
+		if ($config->ga->code) {
+            	    $api = new Services\ApiService($di->get('apiTracker'));
+		} else {
+		    $api = new Services\ApiService();
+		}
 
                 $api->addPlugin($di->get('logPaidUsersPlugin'));
                 $api->addPlugin($di->get('allDataPlugin'));
