@@ -130,25 +130,28 @@ namespace Kladr\Core\Services {
             $page->setDocumentPath($referer != '' ? $referer : '/');
             $page->setDocumentTitle($referer != '' ? $referer : 'Direct');
 
-            $this->googleTracker->addTracking($page);
+            if ($this->googleTracker) {
+		$this->googleTracker->addTracking($page);
+	    }
 
             $event = new \Racecore\GATracking\Tracking\Event();
             $event->setEventCategory('Token_' . $request->get('token'));
             $event->setEventLabel($host);
             $event->setEventAction('Hit');
 
-            $this->googleTracker->addTracking($event);
+	    if ($this->googleTracker) {
+                $this->googleTracker->addTracking($event);
 
-            try
-            {
-                $this->googleTracker->send();
-            } catch (Exception $e)
-            {
-                //echo 'Error: ' . $e->getMessage() . '<br />' . "\r\n";
-                //echo 'Type: ' . get_class($e);
-            }
+                try
+		{
+    	            $this->googleTracker->send();
+    	        } catch (Exception $e)
+    	        {
+    	            //echo 'Error: ' . $e->getMessage() . '<br />' . "\r\n";
+    		    //echo 'Type: ' . get_class($e);
+    	        }
+	    }
         }
 
     }
-
 }

@@ -257,7 +257,11 @@ namespace Kladr\Core {
 
             // Setting api
             $di->setShared('api', function() use ($di, $config) {
-                $api = new Services\ApiService($di->get('apiTracker'));
+		if ($config->ga->code) {
+            	    $api = new Services\ApiService($di->get('apiTracker'));
+		} else {
+		    $api = new Services\ApiService();
+		}
 
                 if($config->application->enableTokens)
                     $api->addPlugin($di->get('enabledTokensPlugin'));
