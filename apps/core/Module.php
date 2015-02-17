@@ -34,6 +34,7 @@ namespace Kladr\Core {
                         'Kladr\Core\Plugins\Base' => $config->application->pluginsBaseDir,
                         'Kladr\Core\Plugins\General' => $config->application->pluginsGeneralDir,
                         'Kladr\Core\Plugins\Tools' => $config->application->pluginsToolsDir,
+
                     )
             );
 
@@ -245,6 +246,8 @@ namespace Kladr\Core {
                 )
             ));
 
+            $di->set('enabledTokensPlugin', '\Kladr\Core\Plugins\General\EnabledTokensPlugin');
+
             // Register GA
 	    if ($config->ga->code) {
                 $di->set('apiTracker', function() use($config) {
@@ -254,19 +257,22 @@ namespace Kladr\Core {
 
             // Setting api
             $di->setShared('api', function() use ($di, $config) {
-		if ($config->ga->code) {
-            	    $api = new Services\ApiService($di->get('apiTracker'));
-		} else {
-		    $api = new Services\ApiService();
-		}
+                $api = new Services\ApiService($di->get('apiTracker'));
 
-                $api->addPlugin($di->get('logPaidUsersPlugin'));
+                if($config->application->enableTokens)
+                    $api->addPlugin($di->get('enabledTokensPlugin'));
+
+                if($config->application->enableUserLog)
+                    $api->addPlugin($di->get('logPaidUsersPlugin'));
+
                 $api->addPlugin($di->get('allDataPlugin'));
-
                 $api->addPlugin($di->get('validate'));
-		$api->addPlugin($di->get('oneString'));
+
+                if($config->sphinxapi->enabled)
+                    $api->addPlugin($di->get('oneString'));
+
                 $api->addPlugin($di->get('find'));
-                $api->addPlugin($di->get('specialCases'));
+                //$api->addPlugin($di->get('specialCases'));
                 //$api->addPlugin($di->get('duplicate'));
                 $api->addPlugin($di->get('findParents'));
                 $api->addPlugin($di->get('parentsSpecialCases'));

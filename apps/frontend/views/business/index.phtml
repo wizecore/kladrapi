@@ -1,0 +1,198 @@
+<script>
+    var crc = [];
+<?php
+$prices = array(400, 1000, 3000, 30000, 10000);
+foreach ($prices as $price)
+{
+    $crc = md5($this->config->options->login . ':' .
+	    $price . '.00:' .
+	    ':' .
+	    $this->config->options->password);
+    echo "crc[$price] = '$crc'; \n";
+}
+?>
+
+    var processPayment = function(price){
+	$('#OutSum').val(price + '.00');
+	$('#SignatureValue').val(crc[price]);
+	
+	$('#pay-form').submit();
+    }
+
+</script>
+
+<form action='https://merchant.roboxchange.com/Index.aspx' method="POST" id="pay-form">
+    <input type="hidden" name="MrchLogin" value="<?= $this->config->options->login ?>">
+    <input type="hidden" name="OutSum" value="" id="OutSum">
+    <input type="hidden" name="InvId" value="">
+    <input type="hidden" name="SignatureValue" value="" id="SignatureValue">
+    <input type="hidden" name="IncCurrLabel" value="rub">
+    <input type="hidden" name="Culture" value='ru'>
+</form>
+
+<div class="content">
+    <div class="cBlock">
+	<div class="contentMain">
+
+	    <h1>Коммерческое использование</h1>
+	    <p>
+		Если Вам необходимо интегрировать сервис в Ваш тиражируемый коммерческий продукт, 
+		или Вы хотите получить 100% гарантию работы сервиса подтвержденную договорными условиями.
+		</a>
+	    </p>
+	    <b>Особенности платной версии:</b>
+	    <ul class="ul-list">
+		<li>Гарантия работы сервиса, отдельные сервера (http://kladr-api.com/api.php).</li>
+		<li>Помощь в настройке по скайпу, ответ технической поддержки в течение рабочего дня.</li>
+		<li>Возможность установить решение на Ваши сервера.</li>
+		<li>Скидки для реселлеров и разработчиков.</li>
+	    </ul>
+	    <br>
+	    <h2>Тарифы</h2>
+
+	    <style>
+		.ratesBlock {
+		    width: 685px;
+		    height: 344px;
+		    border: 3px solid #EFEFEF;
+		    position: relative;
+		    margin: 30px 0 0;
+		    padding: 0 20px;
+		}		
+
+		.ratesBlock .middleSide {
+		    position: absolute;
+		    left: 0;
+		    right: 0;
+		    margin: auto;
+		    top: 0px;
+		    z-index: 3;
+		    height: 344px;
+		    width: 218px;
+		    border: 3px solid #EFEFEF;
+		    background: white;
+		    padding: 0 20px;
+		    border-top: none;
+		    border-bottom: none;
+		}
+
+		.ratesBlock .middleSide h2 {
+		    padding-top: 30px;
+		    font-size: 24px;
+		}	
+
+		.ratesBlock .middleSide .button {
+		    width: 185px;
+		    height: 32px;
+		    line-height: 32px;
+		    margin: 15px auto 0;
+		    font-size: 18px; 
+		    box-shadow: 0 1px 0 #B85D02;
+		}	
+
+		.desc p{
+		    font-size:15px;
+		    padding:0px !important;
+		}
+
+		.ratesBlock .eastSide {
+		    float: right;
+		    width: 184px;
+		    position: relative;
+		}
+
+		.ratesBlock .desc {
+		    height: 112px;
+		    margin-top: 20px;
+		}		
+	    </style>
+
+
+
+	    <div class="ratesBlock">
+		<div class="westSide">
+		    <h2>Тестовый</h2>
+		    <h3>400 руб. <br>на 3 месяца</h3>
+		    <div class="desc">
+			<p>Позволяет проверить коммерческие сервера.</p>
+		    </div>
+		    <a href="javascript: processPayment(400)" class="button">Купить</a>
+		</div>
+		<div class="middleSide">
+		    <div class="rel">
+			<h2>Для физ. лиц</h2>
+			<h3>1000 руб. <br>на 1 год</h3>
+			<div class="desc">
+			    <p>Работаем на основе <a href="https://drive.google.com/file/d/0B0sSPtvPGc3HdjlHejg0Z2RKU2s/view?usp=sharing">договора оферты</a>.</p>
+			</div>
+			<a href="javascript: processPayment(1000)"  class="button">Купить</a>
+		    </div>
+		</div>
+		<div class="eastSide">
+		    <h2>Для юр. лиц</h2>
+		    <h3>3000 руб. <br>на 1 год</h3>
+		    <div class="desc">
+			<p>Заключаем договор с юр. лицом, выставляем счета, акты, высылаем оригиналы по почте.</p>
+		    </div>
+		    <a href="#bill" class="button">Купить</a>
+		</div>
+		<div class="ratesShadow"></div>
+	    </div>
+	    
+	    <br><br><br><br>
+	    <h2 id="bill">Для юридических лиц</h2>
+	    <p>Оставьте нам свои реквизиты и мы подготовим все документы и вышлем счет</p>
+
+	    <script>
+		$(function(){
+		    $('#btn-send').click(function(){
+			var email = $('#email').val().trim();
+			var company = $('#company').val().trim();
+			if(!email || !company)
+			    return false;
+			
+			$.post('/business/feedback', {email : email, plan : '', company:company}, function(){
+			    $('#feedback-form').hide();
+			    $('#feedback-form-done').fadeIn();
+			});
+		    });
+		});
+	    </script>
+	    <div class="form" id="feedback-form">
+		<input type="email" placeholder="Ваш e-mail" id="email"/>
+		<textarea placeholder="Реквизиты" id="company"></textarea>
+		<input type="submit" value="Отправить" class="btn" id="btn-send"/>
+	    </div>
+	    <p id="feedback-form-done" style="display:none">Мы получили, спасибо. Очень скоро мы с вами свяжемся.</p>	    
+	    
+	    <br><br><br><br>
+	    <h2 id="box">Коробочная версия</h2>
+	    <p>Специальное предложение для тех, кто хочет развернуть подобный сервис на своих
+
+		серверах под свои проекты. </p>
+
+	    <p>Мы предоставляем инсталляционные пакеты и помощь в развертывании сервиса на 
+
+		Ваших серверах.</p>
+
+	    <p>Коробочная версия позволяет использовать сервис в абсолютно независимом режиме, 
+
+		а так же дорабатывать его под свои нужды.</p>
+	    <table class="plans">
+		<tr>
+		    <td>30&nbsp;000&nbsp;руб.</td>
+		    <td>включает в себя год бесплатных обновлений и 2 часа консультаций — помощь в установке решения на Вашем сервере.</td>
+		    <td class="buy"><a href="javascript: processPayment(30000)">Купить</a></td>
+		</tr>		
+		<tr>
+		    <td>10&nbsp;000&nbsp;руб.</td>
+		    <td>последующие обновления (в течение года)</td>
+		    <td class="buy"><a href="javascript: processPayment(10000)">Купить</a></td>
+		</tr>		
+
+	    </table>
+
+
+	</div>
+    </div>
+</div>    

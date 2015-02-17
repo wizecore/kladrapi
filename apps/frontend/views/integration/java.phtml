@@ -1,0 +1,33 @@
+<?php
+    $h =  $embedded ? 'h2' : 'h1';
+    $style = $embedded ? 'display: none;' : '';
+?>
+
+<?if($embedded):?>
+<h4 class="blocktoggle javadoc dotted" data-block="javadoc">Java</h4>
+<?endif?>
+
+
+<div class="correctwidth">
+<div class="javadoc docblock" style="<?=$style?>">
+
+    <<?=$h?> class="blocktoggle dotted" data-block="javadoc">
+        Java
+    </<?=$h?>>
+    <hr  class="delimiter"/>
+
+
+        <h3>Автор</h3>
+        <p>
+            <noindex><a href="https://github.com/ILyaCyclone">https://github.com/ILyaCyclone</a></noindex></p>
+
+
+    <p>
+        <noindex>
+           Документация решения — <a href="https://github.com/ILyaCyclone/kladrapi-java">https://github.com/ILyaCyclone/kladrapi-java</a>
+        </noindex>
+    </p>
+    <br><br>
+    <?if($embedded):?><a href="java/">Java</a><?endif?>
+</div>
+</div>

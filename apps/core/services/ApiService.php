@@ -118,19 +118,26 @@ namespace Kladr\Core\Services {
          */
         public function log(Request $request)
         {
-	    if (!$this->googleTracker) {
-		error_log("API Request: " . $request->getURI() . " " . $request->getClientAddress());
-		return;
-	    }
+            $token = trim($request->get('token'));
+            $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+            $host = parse_url($referer);
+            $host = $host['host'];
 
-            $this->googleTracker->setClientID($request->get('token'));
+            if($token != '')
+                $this->googleTracker->setClientID($token);
 
             $page = new \Racecore\GATracking\Tracking\Page();
-            $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
             $page->setDocumentPath($referer != '' ? $referer : '/');
             $page->setDocumentTitle($referer != '' ? $referer : 'Direct');
 
             $this->googleTracker->addTracking($page);
+
+            $event = new \Racecore\GATracking\Tracking\Event();
+            $event->setEventCategory('Token_' . $request->get('token'));
+            $event->setEventLabel($host);
+            $event->setEventAction('Hit');
+
+            $this->googleTracker->addTracking($event);
 
             try
             {

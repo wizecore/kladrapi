@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(0);
 
 use Phalcon\Mvc\Router,
     Phalcon\Mvc\Application,
@@ -18,7 +18,17 @@ $di->set('router', function () {
         'controller' => 'api',
         'action'     => 'index',
     ));
-    
+
+    // better to locate somewhere in the module
+    $router->add(
+        '/integration/{name:.*}/',
+        array(
+            'module'     => 'frontend',
+            'controller' => 'integration',
+            'action' => 'parts'
+        )
+    );
+
     return $router;
 });
 

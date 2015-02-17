@@ -8,10 +8,12 @@ namespace Kladr\Core\Plugins\General {
         \Kladr\Core\Plugins\Base\PluginResult,
         \Kladr\Core\Plugins\Tools\Tools,
         \Kladr\Core\Models\Regions,
+		\Kladr\Core\Models\KladrFields,
         \Kladr\Core\Models\Districts,
         \Kladr\Core\Models\Cities,
         \Kladr\Core\Models\Streets,
         \Kladr\Core\Models\Buildings;
+
 
     /**
      * Kladr\Core\Plugins\General\FindPlugin
@@ -40,7 +42,7 @@ namespace Kladr\Core\Plugins\General {
         public function process(Request $request, PluginResult $prevResult)
         {
 
-            if ($prevResult->error)
+            if ($prevResult->error || $prevResult->isPluginDisabled('FindPlugin'))
             {
                 return $prevResult;
             }
@@ -79,8 +81,24 @@ namespace Kladr\Core\Plugins\General {
                 $cityId = $request->getQuery('cityId');
                 if ($cityId)
                 {
-                    $arCodes = $request->getQuery('contentType') == 'city' ?
-                            $cityId : Cities::getCodes($cityId);
+                    if($request->getQuery('contentType') == 'city')
+					{
+						$arCodes = $cityId;
+					}
+					else
+					{
+						$arCodes = Cities::getCodes($cityId);
+						$cityCode = $arCodes[KladrFields::CodeLocality];
+						$cityCodeOwner = $cityCode - ($cityCode % 1000);
+						if($cityCode == $cityCodeOwner)
+						{
+							$cityCodeOwnerNext = $cityCodeOwner + 1000;
+							$arCodes[KladrFields::CodeLocality] = array(
+								'$gte' => $cityCodeOwner,
+								'$lt' => $cityCodeOwnerNext
+							));
+						}
+					}
                 }
 
                 // streetId
